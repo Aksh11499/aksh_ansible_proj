@@ -1,0 +1,17 @@
+---
+- name: Assignment 3 - Target instance system report
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Display server information
+      debug:
+        msg:
+          - "Hostname: {{ ansible_hostname }}"
+          - "CPU Cores: {{ ansible_processor_vcpus }}"
+          - "RAM: {{ ansible_memtotal_mb }} MB"
+          - "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Display storage information
+      debug:
+        var: ansible_mounts

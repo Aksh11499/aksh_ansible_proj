@@ -1,0 +1,34 @@
+---
+- name: Assignment 2 - Install and configure Tomcat
+  hosts: appserver
+  become: yes
+
+  tasks:
+    - name: Install Java
+      apt:
+        name: default-jdk
+        state: present
+        update_cache: yes
+
+    - name: Install Tomcat
+      apt:
+        name: tomcat10
+        state: present
+        update_cache: yes
+
+    - name: Change Tomcat port from 8080 to 9090
+      replace:
+        path: /etc/tomcat10/server.xml
+        regexp: 'port="8080"'
+        replace: 'port="9090"'
+
+    - name: Restart and enable Tomcat
+      service:
+        name: tomcat10
+        state: restarted
+        enabled: yes
+
+    - name: Verify Tomcat is running
+      service:
+        name: tomcat10
+        state: started

@@ -1,0 +1,38 @@
+---
+- name: Assignment 1 - Install and configure Nginx
+  hosts: webserver
+  become: yes
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Deploy application
+      copy:
+        src: "{{ playbook_dir }}/files/index.html"
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: Change Nginx port from 80 to 8081
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen 80 default_server;'
+        replace: 'listen 8081 default_server;'
+
+    - name: Change IPv6 Nginx port
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen \[::\]:80 default_server;'
+        replace: 'listen [::]:8081 default_server;'
+
+    - name: Test Nginx configuration
+      command: nginx -t
+
+    - name: Restart and enable Nginx
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
