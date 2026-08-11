@@ -1,0 +1,55 @@
+---
+- name: Install and configure Nginx
+  hosts: webserver
+  become: true
+
+  tasks:
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Change Nginx port from 80 to 8081
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen 80 default_server;'
+        replace: 'listen 8081 default_server;'
+
+    - name: Change Nginx IPv6 port from 80 to 8081
+      replace:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen \[::\]:80 default_server;'
+        replace: 'listen [::]:8081 default_server;'
+
+    - name: Deploy application
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Test Nginx configuration
+      command:
+        nginx -t
+      register: nginx_test
+      changed_when: false
+
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: true
+
+    - name: Wait for Nginx port 8081
+      wait_for:
+        host: 127.0.0.1
+        port: 8081
+        timeout: 30
+
+    - name: Check application
+      uri:
+        url: http://127.0.0.1:8081
+        status_code: 200

@@ -1,0 +1,19 @@
+
+PLAY [Test Ansible Vault] ******************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db-01]
+
+TASK [Display database username] ***********************************************
+ok: [db-01] => {
+    "msg": "Database username is admin"
+}
+
+TASK [Display database password] ***********************************************
+ok: [db-01] => {
+    "msg": "Database password is MyPassword123"
+}
+
+PLAY RECAP *********************************************************************
+db-01                      : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

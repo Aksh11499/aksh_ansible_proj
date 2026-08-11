@@ -1,0 +1,75 @@
+
+PLAY [Install and Configure Tomcat] ********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Update apt cache] ********************************************************
+changed: [app-02]
+changed: [app-01]
+
+TASK [Install Java] ************************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Create Tomcat group] *****************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Create Tomcat user] ******************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Create Tomcat installation directory] ************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Download Tomcat] *********************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Extract Tomcat] **********************************************************
+changed: [app-02]
+changed: [app-01]
+
+TASK [Set Tomcat ownership] ****************************************************
+changed: [app-02]
+changed: [app-01]
+
+TASK [Change Tomcat port from 8080 to 9090] ************************************
+changed: [app-02]
+changed: [app-01]
+
+TASK [Copy Tomcat systemd service] *********************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Reload systemd] **********************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Start Tomcat] ************************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Wait for Tomcat port 9090] ***********************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Verify Tomcat port] ******************************************************
+ok: [app-02]
+ok: [app-01]
+
+TASK [Display Tomcat status] ***************************************************
+ok: [app-01] => {
+    "msg": "Tomcat is running on port 9090"
+}
+ok: [app-02] => {
+    "msg": "Tomcat is running on port 9090"
+}
+
+PLAY RECAP *********************************************************************
+app-01                     : ok=16   changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+app-02                     : ok=16   changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

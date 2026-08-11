@@ -1,0 +1,16 @@
+---
+- name: Test Ansible Vault
+  hosts: dbserver
+  become: true
+
+  vars_files:
+    - secret.yml
+
+  tasks:
+    - name: Display database username
+      debug:
+        msg: "Database username is {{ db_username }}"
+
+    - name: Display database password
+      debug:
+        msg: "Database password is {{ db_password }}"

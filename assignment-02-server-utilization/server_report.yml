@@ -1,0 +1,30 @@
+---
+- name: Generate Server Utilization Report
+  hosts: appserver
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    - name: Get CPU utilization
+      shell: top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}'
+      register: cpu_usage
+      changed_when: false
+
+    - name: Get RAM utilization
+      shell: free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2}'
+      register: ram_usage
+      changed_when: false
+
+    - name: Get Storage utilization
+      shell: df -h / | awk 'NR==2 {print $5}'
+      register: storage_usage
+      changed_when: false
+
+    - name: Display Server Utilization Report
+      debug:
+        msg:
+          - "Hostname: {{ ansible_hostname }}"
+          - "CPU Utilization: {{ cpu_usage.stdout }}%"
+          - "RAM Utilization: {{ ram_usage.stdout }}"
+          - "Storage Utilization: {{ storage_usage.stdout }}"

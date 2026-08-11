@@ -1,0 +1,8 @@
+CONFIG_FILE() = /home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg
+DEFAULT_HOST_LIST(/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg) = ['/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/hosts.ini']
+DEFAULT_PRIVATE_KEY_FILE(/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg) = /home/ubuntu/aksh-keypair.pem
+DEFAULT_REMOTE_USER(/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg) = ubuntu
+HOST_KEY_CHECKING(/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg) = False
+INTERPRETER_PYTHON(/home/ubuntu/ansible-assignment/assignment-04-ansible-configuration/ansible.cfg) = auto_silent
+
+GALAXY_SERVERS:

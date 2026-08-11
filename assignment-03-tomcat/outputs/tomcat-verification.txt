@@ -1,0 +1,35 @@
+===== JAVA VERSION =====
+app-02 | CHANGED | rc=0 >>
+openjdk version "25.0.3" 2026-04-21
+OpenJDK Runtime Environment (build 25.0.3+9-2-26.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 25.0.3+9-2-26.04.2-Ubuntu, mixed mode, sharing)
+app-01 | CHANGED | rc=0 >>
+openjdk version "25.0.3" 2026-04-21
+OpenJDK Runtime Environment (build 25.0.3+9-2-26.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 25.0.3+9-2-26.04.2-Ubuntu, mixed mode, sharing)
+
+===== TOMCAT SERVICE =====
+app-02 | CHANGED | rc=0 >>
+active
+app-01 | CHANGED | rc=0 >>
+active
+
+===== TOMCAT PORT =====
+app-02 | CHANGED | rc=0 >>
+LISTEN 0      100                     *:9090            *:*          
+app-01 | CHANGED | rc=0 >>
+LISTEN 0      100                     *:9090            *:*          
+
+===== TOMCAT HTTP TEST =====
+app-02 | CHANGED | rc=0 >>
+HTTP/1.1 200 
+Content-Type: text/html;charset=UTF-8
+Date: Tue, 11 Aug 2026 15:22:23 GMT  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0
+app-01 | CHANGED | rc=0 >>
+HTTP/1.1 200 
+Content-Type: text/html;charset=UTF-8
+Date: Tue, 11 Aug 2026 15:22:23 GMT  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0

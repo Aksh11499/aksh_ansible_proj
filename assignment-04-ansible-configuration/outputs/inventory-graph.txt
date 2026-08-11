@@ -1,0 +1,9 @@
+@all:
+  |--@ungrouped:
+  |--@webserver:
+  |  |--web-01
+  |--@appserver:
+  |  |--app-01
+  |  |--app-02
+  |--@dbserver:
+  |  |--db-01

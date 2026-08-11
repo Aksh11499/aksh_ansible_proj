@@ -1,0 +1,12 @@
+web-01 | CHANGED | rc=0 >>
+HTTP/1.1 200 OK
+Server: nginx/1.28.3 (Ubuntu)
+Date: Tue, 11 Aug 2026 11:29:40 GMT
+Content-Type: text/html
+Content-Length: 244
+Last-Modified: Tue, 11 Aug 2026 10:46:39 GMT
+Connection: keep-alive
+ETag: "6a7afd8f-f4"
+Accept-Ranges: bytes  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0  0    244   0      0   0      0      0      0                              0  0    244   0      0   0      0      0      0                              0  0    244   0      0   0      0      0      0                              0
