@@ -1,0 +1,48 @@
+---
+- name: Deploy new version of Book Seller application
+  hosts: appserver
+  become: true
+
+  tasks:
+    - name: Stop Tomcat
+      ansible.builtin.systemd:
+        name: tomcat
+        state: stopped
+
+    - name: Back up existing Book Seller WAR
+      ansible.builtin.copy:
+        src: /opt/tomcat/webapps/book-seller.war
+        dest: /opt/tomcat/webapps/book-seller.war.backup
+        remote_src: true
+      ignore_errors: true
+
+    - name: Remove old exploded Book Seller application
+      ansible.builtin.file:
+        path: /opt/tomcat/webapps/book-seller
+        state: absent
+
+    - name: Deploy new Book Seller WAR
+      ansible.builtin.copy:
+        src: book-seller-new.war
+        dest: /opt/tomcat/webapps/book-seller.war
+        owner: tomcat
+        group: tomcat
+        mode: "0644"
+
+    - name: Start Tomcat
+      ansible.builtin.systemd:
+        name: tomcat
+        state: started
+        enabled: true
+
+    - name: Wait for Tomcat port 9090
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 9090
+        delay: 5
+        timeout: 60
+
+    - name: Check Book Seller application
+      ansible.builtin.uri:
+        url: http://127.0.0.1:9090/book-seller/
+        status_code: 200
