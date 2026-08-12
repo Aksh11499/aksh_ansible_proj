@@ -1,0 +1,118 @@
+34: command not found
+
+PLAY [Daily System Health Check] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'web-01' is using the discovered Python interpreter at '/usr/bin/python3.14', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'app-01' is using the discovered Python interpreter at '/usr/bin/python3.14', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get CPU count] ***********************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get CPU utilization] *****************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get load average] ********************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get memory information] **************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get memory used] *********************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get memory free] *********************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get memory utilization] **************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get OS information] ******************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get kernel version] ******************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get architecture] ********************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get uptime] **************************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get root filesystem disk information] ************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get root filesystem used space] ******************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get root filesystem free space] ******************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get root filesystem utilization] *****************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Check SSH service] *******************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Get failed services] *****************************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Check whether reboot is required] ****************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Determine overall server status] *****************************************
+ok: [web-01]
+ok: [app-01]
+
+TASK [Create report directory] *************************************************
+ok: [web-01 -> localhost]
+
+TASK [Create consolidated health report] ***************************************
+[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+[DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /home/ubuntu/ansible-assignment/system-health-report/system_health.yml:220:16
+
+218         create: true
+219         marker: ""
+220         block: |
+                   ^ column 16
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+[DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /home/ubuntu/ansible-assignment/system-health-report/system_health.yml:217:15
+
+215     - name: Create consolidated health report
+216       ansible.builtin.blockinfile:
+217         path: "{{ playbook_dir }}/output/system-health-{{ ansible_date_time.date }}.txt"
+                  ^ column 15
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+changed: [app-01 -> localhost]
+changed: [web-01 -> localhost]
+
+PLAY RECAP *********************************************************************
+app-01                     : ok=21   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web-01                     : ok=22   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

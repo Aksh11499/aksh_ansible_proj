@@ -1,0 +1,307 @@
+---
+- name: Daily System Health Check
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    # ============================================================
+    # CPU
+    # ============================================================
+
+    - name: Get CPU count
+      ansible.builtin.command:
+        cmd: nproc
+      register: cpu_count
+      changed_when: false
+
+    - name: Get CPU utilization
+      ansible.builtin.shell: |
+        top -bn1 | awk '/Cpu\(s\)/ {
+          printf "%.1f", 100 - $8
+        }'
+      register: cpu_utilization
+      changed_when: false
+
+    - name: Get load average
+      ansible.builtin.shell: |
+        awk '{print $1 " / " $2 " / " $3}' /proc/loadavg
+      register: load_average
+      changed_when: false
+
+
+    # ============================================================
+    # MEMORY
+    # ============================================================
+
+    - name: Get memory information
+      ansible.builtin.shell: |
+        free -m | awk '/Mem:/ {
+          printf "%s MB", $2
+        }'
+      register: memory_total
+      changed_when: false
+
+    - name: Get memory used
+      ansible.builtin.shell: |
+        free -m | awk '/Mem:/ {
+          printf "%s MB", $3
+        }'
+      register: memory_used
+      changed_when: false
+
+    - name: Get memory free
+      ansible.builtin.shell: |
+        free -m | awk '/Mem:/ {
+          printf "%s MB", $4
+        }'
+      register: memory_free
+      changed_when: false
+
+    - name: Get memory utilization
+      ansible.builtin.shell: |
+        free | awk '/Mem:/ {
+          printf "%.1f", ($3/$2)*100
+        }'
+      register: memory_utilization
+      changed_when: false
+
+
+    # ============================================================
+    # OPERATING SYSTEM
+    # ============================================================
+
+    - name: Get OS information
+      ansible.builtin.shell: |
+        . /etc/os-release
+        echo "$PRETTY_NAME"
+      register: os_info
+      changed_when: false
+
+    - name: Get kernel version
+      ansible.builtin.command:
+        cmd: uname -r
+      register: kernel_version
+      changed_when: false
+
+    - name: Get architecture
+      ansible.builtin.command:
+        cmd: uname -m
+      register: architecture
+      changed_when: false
+
+
+    # ============================================================
+    # UPTIME
+    # ============================================================
+
+    - name: Get uptime
+      ansible.builtin.command:
+        cmd: uptime -p
+      register: uptime_info
+      changed_when: false
+
+
+    # ============================================================
+    # DISK
+    # ============================================================
+
+    - name: Get root filesystem disk information
+      ansible.builtin.shell: |
+        df -h / | awk 'NR==2 {
+          printf "%s", $2
+        }'
+      register: disk_total
+      changed_when: false
+
+    - name: Get root filesystem used space
+      ansible.builtin.shell: |
+        df -h / | awk 'NR==2 {
+          printf "%s", $3
+        }'
+      register: disk_used
+      changed_when: false
+
+    - name: Get root filesystem free space
+      ansible.builtin.shell: |
+        df -h / | awk 'NR==2 {
+          printf "%s", $4
+        }'
+      register: disk_free
+      changed_when: false
+
+    - name: Get root filesystem utilization
+      ansible.builtin.shell: |
+        df / | awk 'NR==2 {
+          printf "%s", $5
+        }'
+      register: disk_utilization
+      changed_when: false
+
+
+    # ============================================================
+    # SSH
+    # ============================================================
+
+    - name: Check SSH service
+      ansible.builtin.command:
+        cmd: systemctl is-active ssh
+      register: ssh_status
+      changed_when: false
+      failed_when: false
+
+
+    # ============================================================
+    # FAILED SERVICES
+    # ============================================================
+
+    - name: Get failed services
+      ansible.builtin.shell: |
+        systemctl --failed --no-legend --no-pager |
+        awk '{print $2}'
+      register: failed_services
+      changed_when: false
+      failed_when: false
+
+
+    # ============================================================
+    # REBOOT CHECK
+    # ============================================================
+
+    - name: Check whether reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+
+    # ============================================================
+    # OVERALL HEALTH
+    # ============================================================
+
+    - name: Determine overall server status
+      ansible.builtin.set_fact:
+        overall_status: >-
+          {{
+            'CRITICAL'
+            if ssh_status.stdout | trim != 'active'
+            or (failed_services.stdout | trim != '')
+            or (disk_utilization.stdout | int >= 90)
+            or (memory_utilization.stdout | float >= 90)
+            else
+            'WARNING'
+            if (disk_utilization.stdout | int >= 80)
+            or (memory_utilization.stdout | float >= 80)
+            or reboot_required.stat.exists
+            else
+            'HEALTHY'
+          }}
+
+
+    # ============================================================
+    # CREATE CONSOLIDATED REPORT ON CONTROLLER
+    # ============================================================
+
+    - name: Create report directory
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/output"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      become: false
+      run_once: true
+
+
+    - name: Create consolidated health report
+      ansible.builtin.blockinfile:
+        path: "{{ playbook_dir }}/output/system-health-{{ ansible_date_time.date }}.txt"
+        create: true
+        marker: ""
+        block: |
+          
+          ================================================================
+                         DAILY SYSTEM HEALTH REPORT
+          ================================================================
+
+          Report Date       : {{ ansible_date_time.date }}
+          Report Time       : {{ ansible_date_time.time }}
+
+          ================================================================
+          SERVER: {{ inventory_hostname }}
+          ================================================================
+
+          Hostname          : {{ ansible_hostname }}
+          IP Address        : {{ ansible_default_ipv4.address }}
+          Overall Status    : {{ overall_status | trim }}
+
+          ------------------------------------------------
+          OPERATING SYSTEM
+          ------------------------------------------------
+
+          OS                : {{ os_info.stdout }}
+          Kernel            : {{ kernel_version.stdout }}
+          Architecture      : {{ architecture.stdout }}
+
+          ------------------------------------------------
+          CPU
+          ------------------------------------------------
+
+          CPU Count         : {{ cpu_count.stdout }}
+          CPU Utilization   : {{ cpu_utilization.stdout }}%
+          Load Average      : {{ load_average.stdout }}
+
+          ------------------------------------------------
+          MEMORY
+          ------------------------------------------------
+
+          Total Memory      : {{ memory_total.stdout }}
+          Used Memory       : {{ memory_used.stdout }}
+          Free Memory       : {{ memory_free.stdout }}
+          Memory Usage      : {{ memory_utilization.stdout }}%
+
+          ------------------------------------------------
+          UPTIME
+          ------------------------------------------------
+
+          Uptime            : {{ uptime_info.stdout }}
+
+          ------------------------------------------------
+          DISK
+          ------------------------------------------------
+
+          Disk Total        : {{ disk_total.stdout }}
+          Disk Used         : {{ disk_used.stdout }}
+          Disk Free         : {{ disk_free.stdout }}
+          Disk Usage        : {{ disk_utilization.stdout }}
+
+          ------------------------------------------------
+          SSH
+          ------------------------------------------------
+
+          SSH Status        : {{ ssh_status.stdout }}
+
+          ------------------------------------------------
+          FAILED SERVICES
+          ------------------------------------------------
+
+          {% if failed_services.stdout | trim == '' %}
+          No failed services detected.
+          {% else %}
+          {{ failed_services.stdout }}
+          {% endif %}
+
+          ------------------------------------------------
+          REBOOT
+          ------------------------------------------------
+
+          Reboot Required   : {{ reboot_required.stat.exists }}
+
+          ================================================================
+                          END OF {{ inventory_hostname }}
+          ================================================================
+
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+      delegate_to: localhost
+      become: false
